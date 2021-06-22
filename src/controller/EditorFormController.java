@@ -31,22 +31,27 @@ public class EditorFormController {
         }
     }
 
+
+    Boolean checkText=true;
+
     public void mnuItemFind_OnAction(ActionEvent actionEvent) {
         setVisible=!setVisible;
         pneFind.setVisible(setVisible);
+        String text = txtEditor.getText();
         if(setVisible){
             txtSearch.requestFocus();
-            Boolean checkText=true;
 
             txtSearch.textProperty().addListener(observable -> {
-
-                String text = txtEditor.getText();
 
                 Pattern regExp = Pattern.compile(txtSearch.getText());
                 Matcher matcher = regExp.matcher(text);
                 if(matcher.find()){
                     txtEditor.selectRange(matcher.start(),matcher.end());
+                    checkText=false;
+                }
 
+                while (matcher.find()){
+                    System.out.println(matcher.matches());
                 }
 
             });
