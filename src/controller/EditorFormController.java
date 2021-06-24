@@ -10,6 +10,7 @@ import java.beans.AppletInitializer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,9 +44,21 @@ public class EditorFormController {
     public void mnuItemExit_OnAction(ActionEvent actionEvent) {
 
         if(!txtEditor.getText().isEmpty()){
-            new Alert(Alert.AlertType.CONFIRMATION,"Are you sure?", ButtonType.YES).show();
-        }
 
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure?",ButtonType.YES);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                ((Stage) (txtEditor.getScene().getWindow())).close();
+            }
+
+
+        }
+//        private ButtonType(String key, String text, ButtonBar.ButtonData buttonData) {
+//            this.key = key;
+//            this.text = text;
+//            this.buttonData = buttonData;
+//        }
+        // (
 
     }
 
