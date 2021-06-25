@@ -16,6 +16,7 @@ public class EditorFormController {
     public TextField txtReplaceText;
     public Label lblResultTrue;
     public Label lblResultFalse;
+    public MenuItem mnuItemSave;
     Boolean setVisible_pneFind =false;
     Boolean setVisible_pneReplace=false;
     public TextArea txtEditor;
@@ -27,6 +28,7 @@ public class EditorFormController {
     private String pattern;
     private String text;
     private List<Integer> searchIndexes=new ArrayList<>();
+    private int replaceIndex=0;
 
     public void initialize(){
         pneFind.setVisible(setVisible_pneFind);
@@ -57,6 +59,8 @@ public class EditorFormController {
     public void mnuItemFind_OnAction(ActionEvent actionEvent) {
         setVisible_pneFind =!setVisible_pneFind;
         pneFind.setVisible(setVisible_pneFind);
+        pneReplace.setVisible(false);
+
 
         if(setVisible_pneFind){
             txtSearch.requestFocus();
@@ -96,7 +100,6 @@ public class EditorFormController {
         }
     }
 
-
     public void btnFindUp_OnAction(ActionEvent actionEvent) {
         if(index>0){
 
@@ -110,8 +113,6 @@ public class EditorFormController {
         }
 
     }
-
-
 
     public void btnFindDown_OnAction(ActionEvent actionEvent) {
 
@@ -127,11 +128,55 @@ public class EditorFormController {
     }
 
     public void mnuItemReplaceAll_OnAction(ActionEvent actionEvent) {
-        setVisible_pneFind =!setVisible_pneFind;
+
         setVisible_pneReplace =!setVisible_pneReplace;
-        pneFind.setVisible(setVisible_pneFind);
+        setVisible_pneFind=setVisible_pneReplace;
+        if (setVisible_pneFind){
+            setVisible_pneReplace=true;
+        }
+        pneFind.setVisible(setVisible_pneReplace);
         pneReplace.setVisible(setVisible_pneReplace);
 
+        txtReplaceText.textProperty().addListener(observable -> {
+            replaceIndex=0;
+        });
+
+        if(setVisible_pneFind){
+            txtSearch.requestFocus();
+
+            txtSearch.textProperty().addListener(observable -> {
+
+                index=0;
+                countOfreg=0;
+                searchIndexes.clear();
+
+                pattern = txtSearch.getText().toLowerCase();
+                text = txtEditor.getText().toLowerCase();
+
+                Pattern regExp = Pattern.compile(pattern);
+                Matcher matcher = regExp.matcher(text);
+
+                while (matcher.find()){
+                    searchIndexes.add(matcher.start());
+                    searchIndexes.add(matcher.end());
+                    countOfreg++;
+                    //System.out.println("find");
+                }
+                if (!(matcher.find(0))){
+                    lblResultFalse.setText("Results 0");
+                    lblResultTrue.setText("");
+                    txtEditor.deselect();
+
+                }else{
+                    txtEditor.selectRange(searchIndexes.get(0), searchIndexes.get(1));
+                    lblResultTrue.setText("Results "+countOfreg);
+                    lblResultFalse.setText("");
+
+                }
+
+
+            });
+        }
 
     }
 
@@ -141,19 +186,42 @@ public class EditorFormController {
         pneFind.setVisible(setVisible_pneFind);
         pneReplace.setVisible(setVisible_pneReplace);
 
+        txtReplaceText.textProperty().addListener(observable -> {
+            replaceIndex=0;
+        });
 
     }
 
     public void btnReplace_OnAction(ActionEvent actionEvent) {
+            text=txtEditor.getText();
+            Pattern regExp = Pattern.compile(pattern);
+            Matcher matcher = regExp.matcher(text);
+            if (matcher.find()) {
+                txtEditor.replaceText(matcher.start(), matcher.end(), txtReplaceText.getText());
+            }
 
     }
-
     public void btnReplaceAll_OnAction(ActionEvent actionEvent) {
+
+        while (true){
+            text=txtEditor.getText();
+            Pattern regExp = Pattern.compile(pattern);
+            Matcher matcher = regExp.matcher(text);
+            if (matcher.find()) {
+                txtEditor.replaceText(matcher.start(), matcher.end(), txtReplaceText.getText());
+            }else{
+                break;
+            }
+        }
     }
 
     public void mnuItemSelectAll_OnAction(ActionEvent actionEvent) {
         if(!txtEditor.getText().isEmpty()){
             txtEditor.selectAll();
         }
+    }
+
+    public void mnuItemSave_OnAction(ActionEvent actionEvent) {
+        txtEditor.textProperty().setValue("advdvd");
     }
 }
