@@ -7,23 +7,21 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.beans.AppletInitializer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EditorFormController {
     public AnchorPane pneReplace;
     public TextField txtReplaceText;
+    public Label lblResultTrue;
+    public Label lblResultFalse;
     Boolean setVisible_pneFind =false;
     Boolean setVisible_pneReplace=false;
     public TextArea txtEditor;
     public TextField txtSearch;
     public AnchorPane pneFind;
-    int[] arr = {};
-    int i=0;
+
     private int countOfreg=0;
     private int index=0;
     private String pattern;
@@ -53,13 +51,6 @@ public class EditorFormController {
 
 
         }
-//        private ButtonType(String key, String text, ButtonBar.ButtonData buttonData) {
-//            this.key = key;
-//            this.text = text;
-//            this.buttonData = buttonData;
-//        }
-        // (
-
     }
 
 
@@ -76,8 +67,8 @@ public class EditorFormController {
                 countOfreg=0;
                 searchIndexes.clear();
 
-                pattern = txtSearch.getText();
-                text = txtEditor.getText();
+                pattern = txtSearch.getText().toLowerCase();
+                text = txtEditor.getText().toLowerCase();
 
                 Pattern regExp = Pattern.compile(pattern);
                 Matcher matcher = regExp.matcher(text);
@@ -86,28 +77,38 @@ public class EditorFormController {
                     searchIndexes.add(matcher.start());
                     searchIndexes.add(matcher.end());
                     countOfreg++;
+                    //System.out.println("find");
                 }
-                txtEditor.selectRange(searchIndexes.get(0),searchIndexes.get(1));
+                if (!(matcher.find(0))){
+                    lblResultFalse.setText("Results 0");
+                    lblResultTrue.setText("");
+                    txtEditor.deselect();
+
+                }else{
+                    txtEditor.selectRange(searchIndexes.get(0), searchIndexes.get(1));
+                    lblResultTrue.setText("Results "+countOfreg);
+                    lblResultFalse.setText("");
+
+                }
+
+
             });
         }
     }
 
 
     public void btnFindUp_OnAction(ActionEvent actionEvent) {
-
         if(index>0){
 
             index=index-2;
             txtEditor.selectRange(searchIndexes.get(index),searchIndexes.get(index+1));
             System.out.println(index);
 
-            if (index==0){
-                index=searchIndexes.size()-2;
-            }
         }else{
             index=searchIndexes.size()-2;
             txtEditor.selectRange(searchIndexes.get(index),searchIndexes.get(index+1));
         }
+
     }
 
 
