@@ -1,7 +1,10 @@
 package controller;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -10,6 +13,7 @@ import java.beans.AppletInitializer;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class EditorFormController {
     public AnchorPane pneReplace;
@@ -29,7 +33,7 @@ public class EditorFormController {
     private String text;
     private List<Integer> searchIndexes=new ArrayList<>();
     private int replaceIndex=0;
-
+    private String copiedText;
     public void initialize(){
         pneFind.setVisible(setVisible_pneFind);
         pneReplace.setVisible(setVisible_pneReplace);
@@ -73,28 +77,30 @@ public class EditorFormController {
 
                 pattern = txtSearch.getText().toLowerCase();
                 text = txtEditor.getText().toLowerCase();
+try {
+    Pattern regExp = Pattern.compile(pattern);
+    Matcher matcher = regExp.matcher(text);
 
-                Pattern regExp = Pattern.compile(pattern);
-                Matcher matcher = regExp.matcher(text);
+    while (matcher.find()) {
+        searchIndexes.add(matcher.start());
+        searchIndexes.add(matcher.end());
+        countOfreg++;
+        //System.out.println("find");
+    }
+    if (!(matcher.find(0))) {
+        lblResultFalse.setText("Results 0");
+        lblResultTrue.setText("");
+        txtEditor.deselect();
 
-                while (matcher.find()){
-                    searchIndexes.add(matcher.start());
-                    searchIndexes.add(matcher.end());
-                    countOfreg++;
-                    //System.out.println("find");
+    } else {
+        txtEditor.selectRange(searchIndexes.get(0), searchIndexes.get(1));
+        lblResultTrue.setText("Results " + countOfreg);
+        lblResultFalse.setText("");
+
+    }
+}catch(PatternSyntaxException e){
+
                 }
-                if (!(matcher.find(0))){
-                    lblResultFalse.setText("Results 0");
-                    lblResultTrue.setText("");
-                    txtEditor.deselect();
-
-                }else{
-                    txtEditor.selectRange(searchIndexes.get(0), searchIndexes.get(1));
-                    lblResultTrue.setText("Results "+countOfreg);
-                    lblResultFalse.setText("");
-
-                }
-
 
             });
         }
@@ -223,5 +229,21 @@ public class EditorFormController {
 
     public void mnuItemSave_OnAction(ActionEvent actionEvent) {
         txtEditor.textProperty().setValue("advdvd");
+    }
+
+    public void mnuItemCut_OnAction(ActionEvent actionEvent) {
+    }public void mnuItemCopy_OnAction(ActionEvent actionEvent) {
+
+    }
+
+
+
+    public void mnuItemPaste_OnAction(ActionEvent actionEvent) {
+        if(txtEditor.getSelectedText().isEmpty()){
+            KeyCode enter = KeyCode.ENTER;
+        }else {
+
+        }
+        System.out.println();
     }
 }
